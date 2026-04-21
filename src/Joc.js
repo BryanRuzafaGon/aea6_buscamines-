@@ -1,75 +1,66 @@
 import Tauler from './Tauler';
-
 /**
  * Classe principal que gestiona la lògica del joc i la interacció amb l'usuari.
  */
 export default class Joc {
-    private tauler: Tauler;
-    private contenidorId: string;
-    private partidaFinalitzada: boolean = false;
-
+    tauler;
+    contenidorId;
+    partidaFinalitzada = false;
     /**
      * Inicialitza el joc creant un nou tauler.
      * @param files Files del tauler.
      * @param columnes Columnes del tauler.
      * @param contenidorId ID de l'element HTML on es dibuixarà el joc.
      */
-    constructor(files: number, columnes: number, contenidorId: string) {
+    constructor(files, columnes, contenidorId) {
         this.tauler = new Tauler(files, columnes);
         this.contenidorId = contenidorId;
         this.dibuixarTauler();
-        
         // Console log per verificació de l'estudiant (fase 1)
         console.log("Tauler inicialitzat de forma aleatòria:");
         console.table(this.tauler.caselles.map(fila => fila.map(c => c.esMina ? 'X' : 'O')));
     }
-
     /**
      * Crea la representació HTML coherent amb l'estat del tauler.
      */
-    public dibuixarTauler(): void {
+    dibuixarTauler() {
         const contenidor = document.getElementById(this.contenidorId);
-        if (!contenidor) return;
-
+        if (!contenidor)
+            return;
         contenidor.innerHTML = '';
         // Establim la graella segons les columnes
         contenidor.style.display = 'grid';
         contenidor.style.gridTemplateColumns = `repeat(${this.tauler.columnes}, 40px)`;
         contenidor.style.gap = '4px';
         contenidor.style.justifyContent = 'center';
-
-        const rutaImatges = 'imatges_buscaminas/img/';
-
+        const rutaImatges = '/imatges_buscaminas/img/';
         for (let f = 0; f < this.tauler.files; f++) {
             for (let c = 0; c < this.tauler.columnes; c++) {
                 const casella = this.tauler.caselles[f][c];
                 const element = document.createElement('div');
                 element.classList.add('casella');
-                
                 let imatgeSrc = rutaImatges + 'notchecked.gif';
-
                 if (casella.revelada) {
                     element.classList.add('revelada');
                     if (casella.esMina) {
                         imatgeSrc = rutaImatges + 'bombdeath.gif';
-                    } else {
+                    }
+                    else {
                         imatgeSrc = `${rutaImatges}open${casella.minesAlVoltant}.gif`;
                     }
-                } else if (casella.marcada) {
+                }
+                else if (casella.marcada) {
                     element.classList.add('marcada');
                     imatgeSrc = rutaImatges + 'bombflagged.gif';
                 }
-
                 element.style.backgroundImage = `url(${imatgeSrc})`;
                 element.style.backgroundSize = 'cover';
-
                 // Esdeveniment de clic esquerre (Revelar)
                 element.addEventListener('click', () => {
                     if (!this.partidaFinalitzada) {
                         this.revelarCasella(f, c);
                     }
                 });
-
                 // Esdeveniment de clic dret (Marcar)
                 element.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
@@ -77,52 +68,46 @@ export default class Joc {
                         this.marcarCasella(f, c);
                     }
                 });
-
                 contenidor.appendChild(element);
             }
         }
     }
-
     /**
      * Gestiona l'acció de revelar una cel·la.
      * @param f Fila de la casella.
      * @param c Columna de l'operació.
      */
-    public revelarCasella(f: number, c: number): void {
+    revelarCasella(f, c) {
         const casella = this.tauler.caselles[f][c];
-
-        if (casella.revelada || casella.marcada) return;
-
+        if (casella.revelada || casella.marcada)
+            return;
         casella.revelada = true;
-
         if (casella.esMina) {
             this.finalitzarJoc(false);
-        } else {
+        }
+        else {
             // Si no hi ha mines a prop, revelem les adjacents recursivament (millora d'experiència)
             if (casella.minesAlVoltant === 0) {
                 this.revelarAdjacents(f, c);
             }
             this.comprovarVictoria();
         }
-
         this.dibuixarTauler();
     }
-
     /**
      * Permet marcar o desmarcar una cel·la com a sospitosa.
      */
-    public marcarCasella(f: number, c: number): void {
+    marcarCasella(f, c) {
         const casella = this.tauler.caselles[f][c];
-        if (casella.revelada) return;
-
+        if (casella.revelada)
+            return;
         casella.marcada = !casella.marcada;
         this.dibuixarTauler();
     }
-
     /**
      * Mètode recursiu per obrir caselles buides adjacents.
      */
-    private revelarAdjacents(f: number, c: number): void {
+    revelarAdjacents(f, c) {
         for (let df = -1; df <= 1; df++) {
             for (let dc = -1; dc <= 1; dc++) {
                 const nf = f + df;
@@ -136,11 +121,10 @@ export default class Joc {
             }
         }
     }
-
     /**
      * Verifica si l'usuari ha guanyat la partida.
      */
-    private comprovarVictoria(): void {
+    comprovarVictoria() {
         let totesRevelades = true;
         for (let f = 0; f < this.tauler.files; f++) {
             for (let c = 0; c < this.tauler.columnes; c++) {
@@ -151,16 +135,14 @@ export default class Joc {
                 }
             }
         }
-
         if (totesRevelades) {
             this.finalitzarJoc(true);
         }
     }
-
     /**
      * Acaba la partida i mostra un missatge a l'usuari.
      */
-    private finalitzarJoc(guanyat: boolean): void {
+    finalitzarJoc(guanyat) {
         this.partidaFinalitzada = true;
         // Revelem totes les mines al finalitzar
         for (let f = 0; f < this.tauler.files; f++) {
@@ -171,16 +153,14 @@ export default class Joc {
             }
         }
         this.dibuixarTauler();
-        
         setTimeout(() => {
             alert(guanyat ? "Enhorabona! Has guanyat la partida!" : "Boom! Has trobat una mina. Partida finalitzada.");
         }, 100);
     }
-
     /**
      * Retorna un color segons el nombre de mines adjacents per a la UI.
      */
-    private obtenirColorNumero(num: number): string {
+    obtenirColorNumero(num) {
         const colors = ['#3498db', '#2ecc71', '#e74c3c', '#9b59b6', '#f1c40f', '#1abc9c', '#34495e', '#7f8c8d'];
         return colors[num - 1] || 'white';
     }
