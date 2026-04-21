@@ -1,0 +1,6 @@
+node_modules
+dist
+.vercel
+aea6_buscamines.zip
+*.log
+.DS_Store

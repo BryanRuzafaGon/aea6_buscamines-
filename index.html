@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscamines - Projecte DAW</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-overlay"></div>
+    <main class="app-container">
+        <header>
+            <h1>Buscamines</h1>
+            <p>Treball de Recerca - Programació OO</p>
+        </header>
+
+        <section class="game-controls">
+            <button id="boto-reiniciar" class="btn-premium">Nova Partida</button>
+        </section>
+
+        <section class="game-board-container">
+            <div id="tauler-buscamines" class="board-glass">
+                <!-- El tauler es generarà dinàmicament aquí -->
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 - Bryan Ruzafa Gonçalves</p>
+        </footer>
+    </main>
+
+    <!-- Importem els scripts. En un entorn de producció caldria compilar els .ts a .js -->
+    <!-- Per a aquesta demo, assumim que s'executa mitjançant un servidor que gestiona ESM o Vite -->
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
